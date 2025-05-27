@@ -1,0 +1,10 @@
+Flask
+flask-cors
+pymongo
+python-dotenv
+openai
+instagrapi
+spotipy
+schedule
+twilio
+selenium

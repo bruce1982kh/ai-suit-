@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Account Switcher</title>
+  <style>
+    body { font-family: Arial; padding: 2rem; background: #f4f4f4; }
+    .container { background: white; padding: 2rem; border-radius: 10px; width: 80%; margin: auto; text-align: center; box-shadow: 0 0 10px #aaa; }
+    input { margin: 0.5rem; padding: 0.5rem; }
+    button { padding: 0.5rem 1rem; margin: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Multi-Account Switcher</h2>
+    <input id="platform" placeholder="Platform (Instagram/Facebook)" />
+    <input id="username" placeholder="Username" />
+    <input id="token" placeholder="Token" />
+    <button onclick="addAccount()">Add Account</button>
+    <div id="account-list"></div>
+  </div>
+
+  <script>
+    async function addAccount() {
+      const platform = document.getElementById('platform').value;
+      const username = document.getElementById('username').value;
+      const token = document.getElementById('token').value;
+      await fetch('http://localhost:5000/accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ platform, username, token })
+      });
+      loadAccounts();
+    }
+
+    async function loadAccounts() {
+      const res = await fetch('http://localhost:5000/accounts');
+      const data = await res.json();
+      const list = data.map((acc, i) => 
+        `<div>
+          ${acc.platform}: ${acc.username}
+          <button onclick="switchTo(${i})">Switch</button>
+        </div>`
+      ).join('');
+      document.getElementById('account-list').innerHTML = list;
+    }
+
+    async function switchTo(index) {
+      const res = await fetch(`http://localhost:5000/switch/${index}`);
+      const data = await res.json();
+      alert(`Switched to ${data.account.username} on ${data.account.platform}`);
+    }
+
+    loadAccounts();
+  </script>
+</body>
+</html>
